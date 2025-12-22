@@ -272,167 +272,160 @@
             overflow-y: auto;
         }
         
-        .modal-content h2 {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
             color: #667eea;
         }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
             color: #6c757d;
+        }
+        
+        .close-btn:hover {
+            color: #495057;
+        }
+        
+        /* SKU Manager Styles */
+        .sku-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+        }
+        
+        .sku-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .sku-item-info {
+            flex: 1;
+        }
+        
+        .sku-item-info strong {
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .sku-item button {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .sku-item button:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        #skuList {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏕️ Venturing Crew Inventory</h1>
-            <p>Equipment Management System</p>
+            <h1>🏕️ Venturing Crew Inventory System</h1>
+            <p>Manage equipment, checkouts, and maintenance</p>
         </header>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('view')">View Equipment</button>
-            <button class="tab" onclick="switchTab('checkout')">Check Out/In</button>
-            <button class="tab" onclick="switchTab('add')">Add Equipment</button>
+            <button class="tab active" onclick="switchTab('add')">Add Equipment</button>
+            <button class="tab" onclick="switchTab('view')">View Inventory</button>
+            <button class="tab" onclick="switchTab('checkout')">Checkouts</button>
+            <button class="tab" onclick="switchTab('sku')">SKU Manager</button>
             <button class="tab" onclick="switchTab('maintenance')">Maintenance</button>
         </div>
         
-        <!-- View Equipment Tab -->
-        <div id="view" class="tab-content active">
-            <div class="alert" id="viewAlert"></div>
-            
-            <div class="filter-bar">
-                <select id="filterCategory" onchange="filterEquipment()">
-                    <option value="">All Categories</option>
-                    <option value="Camping">Camping</option>
-                    <option value="Climbing">Climbing</option>
-                    <option value="Water Sports">Water Sports</option>
-                    <option value="Cooking">Cooking</option>
-                    <option value="Safety">Safety</option>
-                    <option value="Tools">Tools</option>
-                </select>
-                
-                <select id="filterCondition" onchange="filterEquipment()">
-                    <option value="">All Conditions</option>
-                    <option value="Excellent">Excellent</option>
-                    <option value="Good">Good</option>
-                    <option value="Fair">Fair</option>
-                    <option value="Needs Repair">Needs Repair</option>
-                    <option value="Retired">Retired</option>
-                </select>
-                
-                <select id="filterAvailability" onchange="filterEquipment()">
-                    <option value="all">All Equipment</option>
-                    <option value="available">Available Only</option>
-                    <option value="checkedout">Checked Out</option>
-                </select>
-                
-                <select id="filterRetired" onchange="filterEquipment()">
-                    <option value="hide" selected>Hide Retired</option>
-                    <option value="show">Show Retired</option>
-                    <option value="only">Retired Only</option>
-                </select>
-            </div>
-            
-            <div class="equipment-grid" id="equipmentGrid">
-                <div class="loading">Loading equipment...</div>
-            </div>
-        </div>
-        
-        <!-- Check Out/In Tab -->
-        <div id="checkout" class="tab-content">
-            <div class="alert" id="checkoutAlert"></div>
-            
-            <h2>Current Checkouts</h2>
-            <table class="checkout-table" id="checkoutTable">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Checked Out By</th>
-                        <th>Event/Trip</th>
-                        <th>Checkout Date</th>
-                        <th>Expected Return</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="6" class="loading">Loading checkouts...</td></tr>
-                </tbody>
-            </table>
-            
-            <h2 style="margin-top: 40px;">Check Out Equipment</h2>
-            <button class="btn" onclick="openCheckoutModal()">New Checkout</button>
-        </div>
-        
         <!-- Add Equipment Tab -->
-        <div id="add" class="tab-content">
-            <div class="alert" id="addAlert"></div>
-            
+        <div id="add" class="tab-content active">
             <h2>Add New Equipment</h2>
+            <div id="addAlert" class="alert"></div>
+            
             <form id="addEquipmentForm">
                 <div class="form-group">
-                    <label>Item Name *</label>
+                    <label for="itemName">Item Name *</label>
                     <input type="text" id="itemName" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Item Number/SKU *</label>
+                    <label for="itemNumber">Item Number *</label>
                     <input type="text" id="itemNumber" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Category *</label>
+                    <label for="category">Category *</label>
                     <select id="category" required>
                         <option value="">Select Category</option>
                         <option value="Camping">Camping</option>
+                        <option value="Cooking">Cooking</option>
                         <option value="Climbing">Climbing</option>
                         <option value="Water Sports">Water Sports</option>
-                        <option value="Cooking">Cooking</option>
                         <option value="Safety">Safety</option>
-                        <option value="Tools">Tools</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Description</label>
+                    <label for="description">Description</label>
                     <textarea id="description"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Quantity *</label>
-                    <input type="number" id="quantity" value="1" min="1" required>
+                    <label for="quantity">Quantity *</label>
+                    <input type="number" id="quantity" min="1" value="1" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Condition *</label>
+                    <label for="condition">Condition *</label>
                     <select id="condition" required>
                         <option value="Excellent">Excellent</option>
-                        <option value="Good" selected>Good</option>
+                        <option value="Good">Good</option>
                         <option value="Fair">Fair</option>
                         <option value="Needs Repair">Needs Repair</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Purchase Price</label>
-                    <input type="number" id="purchasePrice" step="0.01" min="0">
+                    <label for="purchasePrice">Purchase Price</label>
+                    <input type="number" id="purchasePrice" step="0.01" min="0" placeholder="$0.00">
                 </div>
                 
                 <div class="form-group">
-                    <label>Location (Shelf/Bin)</label>
-                    <input type="text" id="location" placeholder="e.g., Shelf A1, Bin B3">
+                    <label for="location">Storage Location *</label>
+                    <input type="text" id="location" required placeholder="e.g., Shed A, Bin 3">
                 </div>
                 
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="requiresInspection">
-                        Requires Regular Inspection (climbing gear, safety equipment, etc.)
+                        Requires Regular Inspection
                     </label>
                 </div>
                 
                 <div class="form-group">
-                    <label>Notes</label>
+                    <label for="notes">Notes</label>
                     <textarea id="notes"></textarea>
                 </div>
                 
@@ -440,69 +433,148 @@
             </form>
         </div>
         
+        <!-- View Inventory Tab -->
+        <div id="view" class="tab-content">
+            <h2>Equipment Inventory</h2>
+            <div id="viewAlert" class="alert"></div>
+            
+            <div class="filter-bar">
+                <select id="filterCategory" onchange="loadEquipment()">
+                    <option value="">All Categories</option>
+                    <option value="Camping">Camping</option>
+                    <option value="Cooking">Cooking</option>
+                    <option value="Climbing">Climbing</option>
+                    <option value="Water Sports">Water Sports</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <select id="filterCondition" onchange="loadEquipment()">
+                    <option value="">All Conditions</option>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Needs Repair">Needs Repair</option>
+                    <option value="Retired">Retired</option>
+                </select>
+            </div>
+            
+            <div id="equipmentList" class="equipment-grid"></div>
+        </div>
+        
+        <!-- Checkouts Tab -->
+        <div id="checkout" class="tab-content">
+            <h2>Equipment Checkouts</h2>
+            <div id="checkoutAlert" class="alert"></div>
+            
+            <button class="btn" onclick="openCheckoutModal()">New Checkout</button>
+            
+            <table class="checkout-table">
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Quantity</th>
+                        <th>Checked Out By</th>
+                        <th>Event</th>
+                        <th>Date Out</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="checkoutTableBody"></tbody>
+            </table>
+        </div>
+        
+        <!-- SKU Manager Tab -->
+        <div id="sku" class="tab-content">
+            <h2>SKU Manager</h2>
+            <div id="skuAlert" class="alert"></div>
+            
+            <div class="form-group">
+                <label for="skuItemName">Item Name *</label>
+                <input type="text" id="skuItemName" placeholder="Enter item name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="skuNumber">SKU Number *</label>
+                <input type="text" id="skuNumber" placeholder="Enter SKU number" required>
+            </div>
+            
+            <button class="btn" onclick="addSKU()">Add SKU</button>
+            
+            <h3 style="margin-top: 30px; color: #667eea;">Current SKUs</h3>
+            <div id="skuList"></div>
+        </div>
+        
         <!-- Maintenance Tab -->
         <div id="maintenance" class="tab-content">
-            <div class="alert" id="maintenanceAlert"></div>
-            
-            <h2>Equipment Needing Attention</h2>
-            <div id="maintenanceList">
-                <div class="loading">Loading maintenance items...</div>
-            </div>
+            <h2>Maintenance Required</h2>
+            <div id="maintenanceAlert" class="alert"></div>
+            <div id="maintenanceList"></div>
         </div>
     </div>
     
     <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
-            <h2>Check Out Equipment</h2>
+            <div class="modal-header">
+                <h2>Check Out Equipment</h2>
+                <button class="close-btn" onclick="closeCheckoutModal()">&times;</button>
+            </div>
+            
             <form id="checkoutForm">
                 <div class="form-group">
-                    <label>Select Equipment *</label>
+                    <label for="checkoutEquipment">Equipment *</label>
                     <select id="checkoutEquipment" required></select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Quantity *</label>
-                    <input type="number" id="checkoutQuantity" value="1" min="1" required>
+                    <label for="checkoutQuantity">Quantity *</label>
+                    <input type="number" id="checkoutQuantity" min="1" value="1" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Checked Out By (Youth Member) *</label>
+                    <label for="checkoutPerson">Checked Out By *</label>
                     <input type="text" id="checkoutPerson" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Event/Trip Name *</label>
+                    <label for="eventName">Event Name *</label>
                     <input type="text" id="eventName" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Expected Return Date *</label>
+                    <label for="returnDate">Expected Return Date *</label>
                     <input type="date" id="returnDate" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Approved By (Adult Advisor) *</label>
-                    <input type="text" id="approvedBy" required>
+                    <label for="approvedBy">Approved By</label>
+                    <input type="text" id="approvedBy">
                 </div>
                 
                 <div class="action-buttons">
-                    <button type="submit" class="btn">Check Out</button>
+                    <button type="submit" class="btn">Checkout</button>
                     <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
-
+    
     <!-- Return Modal -->
     <div id="returnModal" class="modal">
         <div class="modal-content">
-            <h2>Return Equipment</h2>
+            <div class="modal-header">
+                <h2>Return Equipment</h2>
+                <button class="close-btn" onclick="closeReturnModal()">&times;</button>
+            </div>
+            
             <form id="returnForm">
                 <input type="hidden" id="returnCheckoutId">
                 
                 <div class="form-group">
-                    <label>Condition Upon Return *</label>
+                    <label for="returnCondition">Condition on Return *</label>
                     <select id="returnCondition" required>
                         <option value="Excellent">Excellent</option>
                         <option value="Good">Good</option>
@@ -512,37 +584,41 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Return Notes</label>
-                    <textarea id="returnNotes" placeholder="Any issues or comments?"></textarea>
+                    <label for="returnNotes">Notes</label>
+                    <textarea id="returnNotes"></textarea>
                 </div>
                 
                 <div class="action-buttons">
-                    <button type="submit" class="btn">Complete Return</button>
+                    <button type="submit" class="btn">Return Equipment</button>
                     <button type="button" class="btn btn-secondary" onclick="closeReturnModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
-
+    
     <!-- Edit Equipment Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
-            <h2>Edit Equipment</h2>
+            <div class="modal-header">
+                <h2>Edit Equipment</h2>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            
             <form id="editForm">
                 <input type="hidden" id="editEquipmentId">
                 
                 <div class="form-group">
-                    <label>Item Name</label>
-                    <input type="text" id="editItemName" style="background:#e9ecef;">
+                    <label for="editItemName">Item Name *</label>
+                    <input type="text" id="editItemName" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Item Number</label>
-                    <input type="text" id="editItemNumber" style="background:#e9ecef;">
+                    <label for="editItemNumber">Item Number *</label>
+                    <input type="text" id="editItemNumber" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Condition *</label>
+                    <label for="editCondition">Condition *</label>
                     <select id="editCondition" required>
                         <option value="Excellent">Excellent</option>
                         <option value="Good">Good</option>
@@ -553,18 +629,18 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Location (Shelf/Bin)</label>
-                    <input type="text" id="editLocation" placeholder="e.g., Shelf A1, Bin B3">
+                    <label for="editLocation">Storage Location</label>
+                    <input type="text" id="editLocation">
                 </div>
                 
                 <div class="form-group">
-                    <label>Last Inspection Date</label>
+                    <label for="editLastInspection">Last Inspection Date</label>
                     <input type="date" id="editLastInspection">
                 </div>
                 
                 <div class="form-group">
-                    <label>Notes</label>
-                    <textarea id="editNotes" placeholder="Add any notes about this equipment"></textarea>
+                    <label for="editNotes">Notes</label>
+                    <textarea id="editNotes"></textarea>
                 </div>
                 
                 <div class="action-buttons">
@@ -573,202 +649,110 @@
                 </div>
             </form>
         </div>
-
-<!-- Checkout History Modal -->
-<div id="historyModal" class="modal">
-    <div class="modal-content" style="max-width: 700px;">
-        <h2>Checkout History</h2>
-        <div id="historyContent">
-            <div class="loading">Loading history...</div>
-        </div>
-        <div class="action-buttons" style="margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Close</button>
-        </div>
-    </div>
-</div>
-
     </div>
     
     <script>
-        const API_URL = '/api';
-        let allEquipment = [];
+        const API_URL = 'https://venturinginvetory.onrender.com';
         
         // Tab switching
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
             
-            event.target.classList.add('active');
+            const buttons = document.querySelectorAll('.tab');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
             document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
             
-            if (tabName === 'view') loadEquipment();
-            if (tabName === 'checkout') loadCheckouts();
-            if (tabName === 'maintenance') loadMaintenance();
-        }
-        
-	// View checkout history
-async function viewHistory(equipmentId) {
-    console.log('Opening history for equipment ID:', equipmentId);
-    
-    try {
-        // Get equipment details
-        console.log('Fetching equipment details...');
-        const equipmentResponse = await fetch(`${API_URL}/equipment/${equipmentId}`);
-        console.log('Equipment response status:', equipmentResponse.status);
-        const equipment = await equipmentResponse.json();
-        console.log('Equipment data:', equipment);
-        
-        // Get checkout history
-        console.log('Fetching checkout history...');
-        const historyResponse = await fetch(`${API_URL}/equipment/${equipmentId}/history`);
-        console.log('History response status:', historyResponse.status);
-        
-        if (!historyResponse.ok) {
-            throw new Error(`History request failed: ${historyResponse.status}`);
-        }
-        
-        const history = await historyResponse.json();
-        console.log('History data:', history);
-        
-        const content = document.getElementById('historyContent');
-        
-        if (history.length === 0) {
-            content.innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #6c757d;">
-                    <p style="font-size: 18px; margin-bottom: 10px;">📋 No checkout history</p>
-                    <p>This equipment has never been checked out.</p>
-                </div>
-            `;
-        } else {
-            content.innerHTML = `
-                <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #667eea; margin-bottom: 5px;">${equipment.item_name}</h3>
-                    <p style="color: #495057;">SKU: ${equipment.item_number}</p>
-                    <p style="color: #495057;">Total Checkouts: ${history.length}</p>
-                </div>
-                <div style="max-height: 400px; overflow-y: auto;">
-                    ${history.map(h => `
-                        <div style="border: 2px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                                <div>
-                                    <strong style="color: #667eea; font-size: 16px;">${h.checked_out_by}</strong>
-                                    <p style="color: #6c757d; font-size: 14px; margin-top: 3px;">${h.event}</p>
-                                </div>
-                                <span style="padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; ${h.date_returned ? 'background: #d4edda; color: #155724;' : 'background: #fff3cd; color: #856404;'}">
-                                    ${h.date_returned ? '✓ Returned' : '⏳ Out'}
-                                </span>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
-                                <div>
-                                    <strong>Checked Out:</strong><br>
-                                    ${new Date(h.checkout_date).toLocaleDateString()}
-                                </div>
-                                <div>
-                                    <strong>${h.date_returned ? 'Returned:' : 'Expected Return:'}</strong><br>
-                                    ${h.date_returned ? new Date(h.date_returned).toLocaleDateString() : new Date(h.return_date).toLocaleDateString()}
-                                </div>
-                                ${h.quantity ? `<div><strong>Quantity:</strong> ${h.quantity}</div>` : ''}
-                                ${h.approved_by ? `<div><strong>Approved By:</strong> ${h.approved_by}</div>` : ''}
-                            </div>
-                            ${h.notes ? `<p style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 13px;"><strong>Notes:</strong> ${h.notes}</p>` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-        
-        document.getElementById('historyModal').classList.add('show');
-    } catch (error) {
-        console.error('Error loading history:', error);
-        document.getElementById('historyContent').innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #dc3545;">
-                <p>Failed to load checkout history</p>
-                <p style="font-size: 14px; margin-top: 10px;">${error.message}</p>
-            </div>
-        `;
-        document.getElementById('historyModal').classList.add('show');
-    }
-}
-
-function closeHistoryModal() {
-    document.getElementById('historyModal').classList.remove('show');
-}
-        // Load equipment from API
-        async function loadEquipment() {
-            try {
-                const response = await fetch(`${API_URL}/equipment`);
-                if (!response.ok) throw new Error('Failed to load equipment');
-                
-                allEquipment = await response.json();
-                filterEquipment();
-            } catch (error) {
-                console.error('Error loading equipment:', error);
-                showAlert('viewAlert', 'Failed to load equipment. Make sure the server is running.', 'error');
-                document.getElementById('equipmentGrid').innerHTML = '<p style="color:#dc3545;">Error loading equipment</p>';
+            if (tabName === 'view') {
+                loadEquipment();
+            } else if (tabName === 'checkout') {
+                loadCheckouts();
+            } else if (tabName === 'maintenance') {
+                loadMaintenance();
+            } else if (tabName === 'sku') {
+                loadSKUs();
             }
         }
         
-        function filterEquipment() {
+        // Load equipment
+        async function loadEquipment() {
             const category = document.getElementById('filterCategory').value;
             const condition = document.getElementById('filterCondition').value;
-            const availability = document.getElementById('filterAvailability').value;
             
-            let filtered = allEquipment.filter(e => {
-                if (category && e.category !== category) return false;
-                if (condition && e.condition !== condition) return false;
-                if (availability === 'available' && e.available === 0) return false;
-                if (availability === 'checkedout' && e.available > 0) return false;
-                return true;
-            });
+            let url = `${API_URL}/equipment`;
+            const params = new URLSearchParams();
+            if (category) params.append('category', category);
+            if (condition) params.append('condition', condition);
+            if (params.toString()) url += `?${params.toString()}`;
             
-            const grid = document.getElementById('equipmentGrid');
-            if (filtered.length === 0) {
-                grid.innerHTML = '<p style="color:#6c757d;">No equipment found matching filters.</p>';
-                return;
-            }
-            
-            grid.innerHTML = filtered.map(e => `
-                <div class="equipment-card">
-                    <h3>${e.itemName}</h3>
-                    <p><strong>Item #:</strong> ${e.itemNumber}</p>
-                    <p><strong>Category:</strong> ${e.category}</p>
-                    <p><strong>Available:</strong> ${e.available} of ${e.quantity}</p>
-                    <p><strong>Location:</strong> ${e.location || 'Not specified'}</p>
-                    <span class="status-badge status-${e.condition.toLowerCase().replace(/ /g, '-')}">${e.condition}</span>
-                    ${e.requiresInspection ? '<p style="margin-top:10px; color:#856404;">⚠️ Requires inspection</p>' : ''}
-                    ${e.notes ? `<p style="margin-top:10px; font-size:12px; color:#6c757d;">${e.notes}</p>` : ''}
-                    <div class="action-buttons" style="margin-top:15px;">
-    			<button class="btn btn-small" onclick="editEquipment(${e.id})" style="background:#28a745;">Edit</button>
-    			<button class="btn btn-small" onclick="viewHistory(${e.id})" style="background:#17a2b8;">History</button>
-    			<button class="btn btn-small" onclick="deleteEquipment(${e.id}, '${e.item_name}')" style="background:#dc3545;">Delete</button>
-		    </div>
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to load equipment');
+                
+                const equipment = await response.json();
+                const list = document.getElementById('equipmentList');
+                
+                if (equipment.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; color:#6c757d; padding:40px;">No equipment found</p>';
+                    return;
+                }
+                
+                list.innerHTML = equipment.map(e => `
+                    <div class="equipment-card">
+                        <h3>${e.item_name}</h3>
+                        <p><strong>Item #:</strong> ${e.item_number}</p>
+                        <p><strong>Category:</strong> ${e.category}</p>
+                        <p><strong>Quantity:</strong> ${e.quantity_available}/${e.quantity_total}</p>
+                        <p><strong>Location:</strong> ${e.location}</p>
+                        ${e.description ? `<p><strong>Description:</strong> ${e.description}</p>` : ''}
+                        <span class="status-badge status-${e.condition.toLowerCase().replace(' ', '-')}">${e.condition}</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-small" onclick="editEquipment(${e.id})">Edit</button>
+                            <button class="btn btn-small btn-secondary" onclick="viewHistory(${e.id})">History</button>
+                            <button class="btn btn-small" style="background:#dc3545;" onclick="deleteEquipment(${e.id}, '${e.item_name}')">Delete</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) {
+                console.error('Error loading equipment:', error);
+                showAlert('viewAlert', 'Failed to load equipment', 'error');
+            }
         }
         
         // Load checkouts
         async function loadCheckouts() {
             try {
-                const response = await fetch(`${API_URL}/checkouts`);
+                const response = await fetch(`${API_URL}/checkouts?status=all`);
                 if (!response.ok) throw new Error('Failed to load checkouts');
                 
                 const checkouts = await response.json();
-                const tbody = document.querySelector('#checkoutTable tbody');
+                const tbody = document.getElementById('checkoutTableBody');
                 
                 if (checkouts.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6c757d;">No equipment currently checked out</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#6c757d;padding:20px;">No checkouts found</td></tr>';
                     return;
                 }
                 
                 tbody.innerHTML = checkouts.map(c => `
-                    <tr>
+                    <tr style="${c.status === 'overdue' ? 'background:#fff3cd;' : ''}">
                         <td>${c.itemName}</td>
+                        <td>${c.quantityOut}</td>
                         <td>${c.checkedOutBy}</td>
-                        <td>${c.event}</td>
+                        <td>${c.eventName}</td>
                         <td>${new Date(c.checkoutDate).toLocaleDateString()}</td>
                         <td>${new Date(c.returnDate).toLocaleDateString()}</td>
-                        <td><button class="btn btn-small" onclick="openReturnModal(${c.id})">Return</button></td>
+                        <td>
+                            <span class="status-badge ${c.status === 'returned' ? 'status-good' : c.status === 'overdue' ? 'status-needs-repair' : 'status-excellent'}">
+                                ${c.status.toUpperCase()}
+                            </span>
+                        </td>
+                        <td>
+                            ${c.status === 'active' || c.status === 'overdue' ? 
+                                `<button class="btn btn-small" onclick="openReturnModal(${c.id})">Return</button>` : 
+                                ''}
+                        </td>
                     </tr>
                 `).join('');
             } catch (error) {
@@ -777,21 +761,49 @@ function closeHistoryModal() {
             }
         }
         
+        // View equipment history
+        async function viewHistory(equipmentId) {
+            try {
+                const response = await fetch(`${API_URL}/equipment/${equipmentId}/history`);
+                if (!response.ok) throw new Error('Failed to load history');
+                
+                const history = await response.json();
+                
+                if (history.length === 0) {
+                    alert('No checkout history for this item');
+                    return;
+                }
+                
+                let historyText = 'Checkout History:\n\n';
+                history.forEach(h => {
+                    historyText += `${new Date(h.checkoutDate).toLocaleDateString()} - ${h.checkedOutBy}\n`;
+                    historyText += `Event: ${h.eventName}\n`;
+                    historyText += `Status: ${h.status}\n\n`;
+                });
+                
+                alert(historyText);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                alert('Failed to load equipment history');
+            }
+        }
+        
         // Checkout modal
         async function openCheckoutModal() {
             try {
-                const response = await fetch(`${API_URL}/equipment`);
-                const equipment = await response.json();
+                const response = await fetch(`${API_URL}/equipment?available=true`);
+                if (!response.ok) throw new Error('Failed to load available equipment');
                 
+                const equipment = await response.json();
                 const select = document.getElementById('checkoutEquipment');
-                select.innerHTML = '<option value="">Select equipment...</option>' + 
-                    equipment.filter(e => e.available > 0)
-                        .map(e => `<option value="${e.id}" data-available="${e.available}">${e.itemName} (${e.available} available)</option>`)
-                        .join('');
+                
+                select.innerHTML = '<option value="">Select Equipment</option>' + 
+                    equipment.map(e => `<option value="${e.id}">${e.item_name} (${e.quantity_available} available)</option>`).join('');
                 
                 document.getElementById('checkoutModal').classList.add('show');
             } catch (error) {
-                showAlert('checkoutAlert', 'Failed to load equipment list', 'error');
+                console.error('Error:', error);
+                showAlert('checkoutAlert', 'Failed to load equipment', 'error');
             }
         }
         
@@ -940,6 +952,91 @@ function closeHistoryModal() {
             }
         }
         
+        // SKU Management Functions
+        async function addSKU() {
+            const itemName = document.getElementById('skuItemName').value.trim();
+            const skuNumber = document.getElementById('skuNumber').value.trim();
+            
+            if (!itemName || !skuNumber) {
+                showAlert('skuAlert', 'Please fill in all fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/add-sku`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemName, skuNumber })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to add SKU');
+                }
+                
+                const data = await response.json();
+                showAlert('skuAlert', data.message || 'SKU added successfully!', 'success');
+                document.getElementById('skuItemName').value = '';
+                document.getElementById('skuNumber').value = '';
+                loadSKUs();
+            } catch (error) {
+                console.error('Error adding SKU:', error);
+                showAlert('skuAlert', error.message, 'error');
+            }
+        }
+        
+        async function loadSKUs() {
+            try {
+                const response = await fetch(`${API_URL}/skus`);
+                if (!response.ok) throw new Error('Failed to load SKUs');
+                
+                const skus = await response.json();
+                const skuList = document.getElementById('skuList');
+                
+                if (skus.length === 0) {
+                    skuList.innerHTML = '<p style="text-align:center; color:#6c757d; padding:20px;">No SKUs found. Add your first SKU above!</p>';
+                    return;
+                }
+                
+                skuList.innerHTML = skus.map(sku => `
+                    <div class="sku-item">
+                        <div class="sku-item-info">
+                            <strong>${sku.item_name}</strong>
+                            <p style="color: #6c757d; margin-top: 5px;">SKU: ${sku.sku_number}</p>
+                        </div>
+                        <button onclick="deleteSKU(${sku.id}, '${sku.item_name}')">Delete</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading SKUs:', error);
+                showAlert('skuAlert', 'Failed to load SKUs', 'error');
+            }
+        }
+        
+        async function deleteSKU(id, itemName) {
+            if (!confirm(`Are you sure you want to delete the SKU for "${itemName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/delete-sku/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete SKU');
+                }
+                
+                const data = await response.json();
+                showAlert('skuAlert', data.message || 'SKU deleted successfully!', 'success');
+                loadSKUs();
+            } catch (error) {
+                console.error('Error deleting SKU:', error);
+                showAlert('skuAlert', error.message, 'error');
+            }
+        }
+        
         // Alert helper
         function showAlert(elementId, message, type) {
             const alert = document.getElementById(elementId);
@@ -972,64 +1069,64 @@ function closeHistoryModal() {
         }
         
         // Edit equipment
-async function editEquipment(id) {
-    try {
-        const response = await fetch(`${API_URL}/equipment/${id}`);
-        if (!response.ok) throw new Error('Failed to load equipment');
-        
-        const equipment = await response.json();
-        
-        document.getElementById('editEquipmentId').value = equipment.id;
-        document.getElementById('editItemName').value = equipment.item_name;
-        document.getElementById('editItemNumber').value = equipment.item_number;
-        document.getElementById('editCondition').value = equipment.condition;
-        document.getElementById('editLocation').value = equipment.location || '';
-        document.getElementById('editLastInspection').value = equipment.last_inspection_date || '';
-        document.getElementById('editNotes').value = equipment.notes || '';
-        
-        document.getElementById('editModal').classList.add('show');
-    } catch (error) {
-        showAlert('viewAlert', 'Failed to load equipment details', 'error');
-    }
-}
-
-function closeEditModal() {
-    document.getElementById('editModal').classList.remove('show');
-    document.getElementById('editForm').reset();
-}
-
-document.getElementById('editForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const id = document.getElementById('editEquipmentId').value;
-    const data = {
-    item_name: document.getElementById('editItemName').value,
-    item_number: document.getElementById('editItemNumber').value,
-    condition: document.getElementById('editCondition').value,
-    location: document.getElementById('editLocation').value,
-    lastInspection: document.getElementById('editLastInspection').value || null,
-    notes: document.getElementById('editNotes').value
-};
-    
-    try {
-        const response = await fetch(`${API_URL}/equipment/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Failed to update equipment');
+        async function editEquipment(id) {
+            try {
+                const response = await fetch(`${API_URL}/equipment/${id}`);
+                if (!response.ok) throw new Error('Failed to load equipment');
+                
+                const equipment = await response.json();
+                
+                document.getElementById('editEquipmentId').value = equipment.id;
+                document.getElementById('editItemName').value = equipment.item_name;
+                document.getElementById('editItemNumber').value = equipment.item_number;
+                document.getElementById('editCondition').value = equipment.condition;
+                document.getElementById('editLocation').value = equipment.location || '';
+                document.getElementById('editLastInspection').value = equipment.last_inspection_date || '';
+                document.getElementById('editNotes').value = equipment.notes || '';
+                
+                document.getElementById('editModal').classList.add('show');
+            } catch (error) {
+                showAlert('viewAlert', 'Failed to load equipment details', 'error');
+            }
         }
         
-        closeEditModal();
-        showAlert('viewAlert', 'Equipment updated successfully!', 'success');
-        loadEquipment();
-    } catch (error) {
-        showAlert('viewAlert', error.message, 'error');
-    }
-});
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editForm').reset();
+        }
+        
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('editEquipmentId').value;
+            const data = {
+                item_name: document.getElementById('editItemName').value,
+                item_number: document.getElementById('editItemNumber').value,
+                condition: document.getElementById('editCondition').value,
+                location: document.getElementById('editLocation').value,
+                lastInspection: document.getElementById('editLastInspection').value || null,
+                notes: document.getElementById('editNotes').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/equipment/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to update equipment');
+                }
+                
+                closeEditModal();
+                showAlert('viewAlert', 'Equipment updated successfully!', 'success');
+                loadEquipment();
+            } catch (error) {
+                showAlert('viewAlert', error.message, 'error');
+            }
+        });
         
         // Initialize
         loadEquipment();
