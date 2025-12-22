@@ -412,6 +412,70 @@ app.post('/api/maintenance', async (req, res) => {
   }
 });
 
+// ============== SKU MANAGEMENT ENDPOINTS ==============
+
+// Get all SKUs
+app.get('/api/skus', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, item_name, sku_number, created_at
+      FROM skus
+      ORDER BY item_name
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching SKUs:', err);
+    res.status(500).json({ error: 'Failed to fetch SKUs' });
+  }
+});
+
+// Add new SKU
+app.post('/api/add-sku', async (req, res) => {
+  const { itemName, skuNumber } = req.body;
+
+  if (!itemName || !skuNumber) {
+    return res.status(400).json({ error: 'Item name and SKU number are required' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO skus (item_name, sku_number)
+       VALUES ($1, $2)
+       RETURNING *`,
+      [itemName, skuNumber]
+    );
+    res.status(201).json({ 
+      message: 'SKU added successfully',
+      sku: result.rows[0]
+    });
+  } catch (err) {
+    console.error('Error adding SKU:', err);
+    if (err.code === '23505') { // Unique violation
+      res.status(400).json({ error: 'SKU number already exists' });
+    } else {
+      res.status(500).json({ error: 'Failed to add SKU' });
+    }
+  }
+});
+
+// Delete SKU
+app.delete('/api/delete-sku/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM skus WHERE id = $1 RETURNING *',
+      [req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'SKU not found' });
+    }
+    res.json({ message: 'SKU deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting SKU:', err);
+    res.status(500).json({ error: 'Failed to delete SKU' });
+  }
+});
+
 // ============== START SERVER ==============
 
 app.listen(port, '0.0.0.0', () => {
