@@ -4,20 +4,21 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+   origin: '*',
+   credentials: true
+}));
+
 app.use(express.json());
 app.use(express.static('public')); // Serve your HTML file from 'public' folder
 
-// PostgreSQL connection
+// PostgreSQL connection - works with both local and Render
 const pool = new Pool({
-  user: process.env.DB_USER || 'venturing_user',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'venturing_inventory',
-  password: process.env.DB_PASSWORD || 'crew2024',
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || 'crew2024'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'venturing_inventory'}`,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 // Test database connection
@@ -117,19 +118,21 @@ app.post('/api/equipment', async (req, res) => {
 
 // Update equipment
 app.put('/api/equipment/:id', async (req, res) => {
-  const { condition, location, notes, lastInspection } = req.body;
+  const { item_name, item_number, condition, location, notes, lastInspection } = req.body;
   
   try {
     const result = await pool.query(
       `UPDATE equipment 
-       SET condition = COALESCE($1, condition),
-           location = COALESCE($2, location),
-           notes = COALESCE($3, notes),
-           last_inspection_date = COALESCE($4, last_inspection_date),
+       SET item_name = COALESCE($1, item_name),
+           item_number = COALESCE($2, item_number),
+           condition = COALESCE($3, condition),
+           location = COALESCE($4, location),
+           notes = COALESCE($5, notes),
+           last_inspection_date = COALESCE($6, last_inspection_date),
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $5
+       WHERE id = $7
        RETURNING *`,
-      [condition, location, notes, lastInspection, req.params.id]
+      [item_name, item_number, condition, location, notes, lastInspection, req.params.id]
     );
     
     if (result.rows.length === 0) {
@@ -144,25 +147,64 @@ app.put('/api/equipment/:id', async (req, res) => {
 
 // Delete equipment
 app.delete('/api/equipment/:id', async (req, res) => {
+  try {
+    // Check if equipment is currently checked out
+    const checkoutCheck = await pool.query(
+      'SELECT id FROM checkouts WHERE equipment_id = $1 AND status = \'OUT\'',
+      [req.params.id]
+    );
+    
+    if (checkoutCheck.rows.length > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete equipment that is currently checked out. Please return it first.' 
+      });
+    }
+
+    // Check if equipment has any checkout history
+    const historyCheck = await pool.query(
+      'SELECT COUNT(*) as count FROM checkouts WHERE equipment_id = $1',
+      [req.params.id]
+    );
+
+    if (parseInt(historyCheck.rows[0].count) > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete equipment with checkout history. Consider marking it as "Retired" instead.' 
+      });
+    }
+    
+    const result = await pool.query(
+      'DELETE FROM equipment WHERE id = $1 RETURNING *',
+      [req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Equipment not found' });
+    }
+    res.json({ message: 'Equipment deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting equipment:', err);
+    res.status(500).json({ error: 'Failed to delete equipment' });
+  }
+});
+
+// Get checkout history for specific equipment
+app.get('/api/equipment/:id/history', async (req, res) => {
     try {
         const { id } = req.params;
-        
-        // Check if equipment has checkout history
-        const checkoutCheck = await pool.query(
-            'SELECT COUNT(*) FROM checkouts WHERE equipment_id = $1',
+        const result = await pool.query(
+            `SELECT 
+                c.*,
+                e.item_name,
+                e.item_number
+             FROM checkouts c
+             JOIN equipment e ON c.equipment_id = e.id
+             WHERE c.equipment_id = $1
+             ORDER BY c.checkout_date DESC`,
             [id]
         );
-        
-        if (parseInt(checkoutCheck.rows[0].count) > 0) {
-            return res.status(400).json({ 
-                error: 'Cannot delete equipment with checkout history. Consider retiring it instead.' 
-            });
-        }
-        
-        await pool.query('DELETE FROM equipment WHERE id = $1', [id]);
-        res.json({ message: 'Equipment deleted successfully' });
+        res.json(result.rows);
     } catch (error) {
-        console.error('Error deleting equipment:', error);
+        console.error('Error fetching checkout history:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -379,7 +421,7 @@ app.listen(port, '0.0.0.0', () => {
   ==========================================
   
   Server: http://localhost:${port}
-  Database: ${process.env.DB_NAME || 'venturing_inventory'}
+  Environment: ${process.env.NODE_ENV || 'development'}
   
   Open your browser to http://localhost:${port}
   ==========================================

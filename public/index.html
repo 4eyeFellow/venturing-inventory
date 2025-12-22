@@ -282,52 +282,6 @@
             padding: 40px;
             color: #6c757d;
         }
-.sku-preview {
-    background: #e7f3ff;
-    border: 2px dashed #667eea;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.sku-preview .suggested-sku {
-    font-size: 24px;
-    font-weight: bold;
-    color: #667eea;
-    font-family: monospace;
-    margin: 10px 0;
-}
-
-.sku-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.sku-card {
-    background: white;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 15px;
-}
-
-.sku-card .category-name {
-    font-weight: bold;
-    color: #667eea;
-    margin-bottom: 8px;
-}
-
-.sku-card .next-sku {
-    font-family: monospace;
-    font-weight: bold;
-    color: #28a745;
-    margin-top: 8px;
-    padding: 5px;
-    background: #d4edda;
-    border-radius: 4px;
-}
     </style>
 </head>
 <body>
@@ -341,7 +295,6 @@
             <button class="tab active" onclick="switchTab('view')">View Equipment</button>
             <button class="tab" onclick="switchTab('checkout')">Check Out/In</button>
             <button class="tab" onclick="switchTab('add')">Add Equipment</button>
-	    <button class="tab" onclick="switchTab('sku')">SKU Manager</button>
             <button class="tab" onclick="switchTab('maintenance')">Maintenance</button>
         </div>
         
@@ -351,22 +304,14 @@
             
             <div class="filter-bar">
                 <select id="filterCategory" onchange="filterEquipment()">
-    		  <option value="">All Categories</option>
-    		  <option value="Tents">Tents</option>
-    		  <option value="Sleeping Bags/Pads">Sleeping Bags/Pads</option>
-    		  <option value="Backpacks">Backpacks</option>
-    		  <option value="Cooking">Cooking</option>
-    		  <option value="Water/Hydration">Water/Hydration</option>
-    		  <option value="Tools">Tools</option>
-    		  <option value="Safety/First Aid">Safety/First Aid</option>
-    		  <option value="Climbing">Climbing</option>
-    		  <option value="Water Sports">Water Sports</option>
-    		  <option value="Camping Gear">Camping Gear</option>
-    		  <option value="Lighting">Lighting</option>
-    		  <option value="Navigation">Navigation</option>
-    		  <option value="Clothing">Clothing</option>
-    		  <option value="Other">Other</option>
-		</select>
+                    <option value="">All Categories</option>
+                    <option value="Camping">Camping</option>
+                    <option value="Climbing">Climbing</option>
+                    <option value="Water Sports">Water Sports</option>
+                    <option value="Cooking">Cooking</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Tools">Tools</option>
+                </select>
                 
                 <select id="filterCondition" onchange="filterEquipment()">
                     <option value="">All Conditions</option>
@@ -381,6 +326,12 @@
                     <option value="all">All Equipment</option>
                     <option value="available">Available Only</option>
                     <option value="checkedout">Checked Out</option>
+                </select>
+                
+                <select id="filterRetired" onchange="filterEquipment()">
+                    <option value="hide" selected>Hide Retired</option>
+                    <option value="show">Show Retired</option>
+                    <option value="only">Retired Only</option>
                 </select>
             </div>
             
@@ -419,42 +370,29 @@
             <div class="alert" id="addAlert"></div>
             
             <h2>Add New Equipment</h2>
-            <div class="sku-preview" id="skuPreview" style="display: none;">
-    <div style="font-size: 14px; color: #495057;">💡 Suggested SKU:</div>
-    <div class="suggested-sku" id="suggestedSKU">-</div>
-    <button type="button" class="btn btn-small" onclick="useSuggestedSKU()" style="background:#17a2b8;">Use This SKU</button>
-	   </div>
-	    <form id="addEquipmentForm">
+            <form id="addEquipmentForm">
                 <div class="form-group">
-    		    <label>Item Name *</label>
+                    <label>Item Name *</label>
                     <input type="text" id="itemName" required>
-		</div>
-
-		<div class="form-group">
-    		    <label>Item Number *</label>
-    		    <input type="text" id="itemNumber" required>
-		</div>
+                </div>
                 
                 <div class="form-group">
-    			<label>Category *</label>
-    			<select id="category" required onchange="updateSKUSuggestion()">
-        			<option value="">Select Category</option>
-        			<option value="Tents">Tents</option>
-        			<option value="Sleeping Bags/Pads">Sleeping Bags/Pads</option>
-        			<option value="Backpacks">Backpacks</option>
-        			<option value="Cooking">Cooking</option>
-        			<option value="Water/Hydration">Water/Hydration</option>
-        			<option value="Tools">Tools</option>
-        			<option value="Safety/First Aid">Safety/First Aid</option>
-        			<option value="Climbing">Climbing</option>
-        			<option value="Water Sports">Water Sports</option>
-        			<option value="Camping Gear">Camping Gear</option>
-        			<option value="Lighting">Lighting</option>
-        			<option value="Navigation">Navigation</option>
-        			<option value="Clothing">Clothing</option>
-        			<option value="Other">Other</option>
-    			</select>
-		</div>
+                    <label>Item Number/SKU *</label>
+                    <input type="text" id="itemNumber" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Camping">Camping</option>
+                        <option value="Climbing">Climbing</option>
+                        <option value="Water Sports">Water Sports</option>
+                        <option value="Cooking">Cooking</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Tools">Tools</option>
+                    </select>
+                </div>
                 
                 <div class="form-group">
                     <label>Description</label>
@@ -502,20 +440,6 @@
             </form>
         </div>
         
-	<div id="sku" class="tab-content">
-    <h2>SKU Manager</h2>
-    <p style="color: #6c757d; margin-bottom: 20px;">Track SKU numbers by category</p>
-    
-    <div style="background: #e7f3ff; border: 2px solid #667eea; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
-        <h3 style="color: #667eea;">📋 SKU Format: UE-[CATEGORY]-[NUMBER]</h3>
-        <p style="color: #495057;">Example: UE-TNT-001</p>
-    </div>
-    
-    <div class="sku-grid" id="skuGrid">
-        <div class="loading">Loading...</div>
-    </div>
-</div>
-
         <!-- Maintenance Tab -->
         <div id="maintenance" class="tab-content">
             <div class="alert" id="maintenanceAlert"></div>
@@ -609,12 +533,12 @@
                 
                 <div class="form-group">
                     <label>Item Name</label>
-                    <input type="text" id="editItemName" required>
+                    <input type="text" id="editItemName" style="background:#e9ecef;">
                 </div>
                 
                 <div class="form-group">
                     <label>Item Number</label>
-                    <input type="text" id="editItemNumber" required>
+                    <input type="text" id="editItemNumber" style="background:#e9ecef;">
                 </div>
                 
                 <div class="form-group">
@@ -649,94 +573,26 @@
                 </div>
             </form>
         </div>
+
+<!-- Checkout History Modal -->
+<div id="historyModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <h2>Checkout History</h2>
+        <div id="historyContent">
+            <div class="loading">Loading history...</div>
+        </div>
+        <div class="action-buttons" style="margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Close</button>
+        </div>
+    </div>
+</div>
+
     </div>
     
     <script>
-        const API_URL = 'http://localhost:3000/api';
+        const API_URL = '/api';
         let allEquipment = [];
         
-	// SKU System
-const SKU_CATEGORIES = {
-    'Tents': 'TNT',
-    'Sleeping Bags/Pads': 'SLP',
-    'Backpacks': 'BPK',
-    'Cooking': 'CKG',
-    'Water/Hydration': 'H2O',
-    'Tools': 'TLS',
-    'Safety/First Aid': 'SFT',
-    'Climbing': 'CLB',
-    'Water Sports': 'WTR',
-    'Camping Gear': 'CMP',
-    'Lighting': 'LGT',
-    'Navigation': 'NAV',
-    'Clothing': 'CLO',
-    'Other': 'OTH'
-};
-
-const SKU_PREFIX = 'UE';
-
-function getNextSKUNumber(categoryCode) {
-    const categoryItems = allEquipment.filter(item => {
-        const itemSKU = item.itemNumber || item.item_number || '';
-        return itemSKU.includes(`-${categoryCode}-`);
-    });
-    if (categoryItems.length === 0) return '001';
-    const numbers = categoryItems.map(item => {
-        const sku = item.itemNumber || item.item_number || '';
-        const parts = sku.split('-');
-        return parseInt(parts[parts.length - 1]) || 0;
-    });
-    return String(Math.max(...numbers) + 1).padStart(3, '0');
-}
-
-function generateSKU(category) {
-    const categoryCode = SKU_CATEGORIES[category];
-    if (!categoryCode) return '';
-    return `${SKU_PREFIX}-${categoryCode}-${getNextSKUNumber(categoryCode)}`;
-}
-
-function updateSKUSuggestion() {
-    const category = document.getElementById('category').value;
-    if (!category) {
-        document.getElementById('skuPreview').style.display = 'none';
-        return;
-    }
-    document.getElementById('suggestedSKU').textContent = generateSKU(category);
-    document.getElementById('skuPreview').style.display = 'block';
-}
-
-function useSuggestedSKU() {
-    document.getElementById('itemNumber').value = document.getElementById('suggestedSKU').textContent;
-}
-
-function generateAndFillSKU() {
-    const category = document.getElementById('category').value;
-    if (!category) {
-        alert('Please select a category first!');
-        return;
-    }
-    const sku = generateSKU(category);
-    document.getElementById('itemNumber').value = sku;
-    showAlert('addAlert', `Generated SKU: ${sku}`, 'success');
-}
-
-async function loadSKUManager() {
-    const response = await fetch(`${API_URL}/equipment`);
-    allEquipment = await response.json();
-    const grid = document.getElementById('skuGrid');
-    grid.innerHTML = '';
-    Object.entries(SKU_CATEGORIES).forEach(([name, code]) => {
-        const items = allEquipment.filter(i => (i.itemNumber||i.item_number||'').includes(`-${code}-`));
-        const last = items.length > 0 ? Math.max(...items.map(i => parseInt((i.itemNumber||i.item_number||'').split('-').pop())||0)) : 0;
-        const next = String(last + 1).padStart(3, '0');
-        grid.innerHTML += `<div class="sku-card">
-            <div class="category-name">${name}</div>
-            <div>Code: ${code}</div>
-            <div>Items: ${items.length}</div>
-            <div class="next-sku">Next: ${SKU_PREFIX}-${code}-${next}</div>
-        </div>`;
-    });
-}
         // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -748,9 +604,95 @@ async function loadSKUManager() {
             if (tabName === 'view') loadEquipment();
             if (tabName === 'checkout') loadCheckouts();
             if (tabName === 'maintenance') loadMaintenance();
-	    if (tabName === 'sku') loadSKUManager();
         }
         
+	// View checkout history
+async function viewHistory(equipmentId) {
+    console.log('Opening history for equipment ID:', equipmentId);
+    
+    try {
+        // Get equipment details
+        console.log('Fetching equipment details...');
+        const equipmentResponse = await fetch(`${API_URL}/equipment/${equipmentId}`);
+        console.log('Equipment response status:', equipmentResponse.status);
+        const equipment = await equipmentResponse.json();
+        console.log('Equipment data:', equipment);
+        
+        // Get checkout history
+        console.log('Fetching checkout history...');
+        const historyResponse = await fetch(`${API_URL}/equipment/${equipmentId}/history`);
+        console.log('History response status:', historyResponse.status);
+        
+        if (!historyResponse.ok) {
+            throw new Error(`History request failed: ${historyResponse.status}`);
+        }
+        
+        const history = await historyResponse.json();
+        console.log('History data:', history);
+        
+        const content = document.getElementById('historyContent');
+        
+        if (history.length === 0) {
+            content.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <p style="font-size: 18px; margin-bottom: 10px;">📋 No checkout history</p>
+                    <p>This equipment has never been checked out.</p>
+                </div>
+            `;
+        } else {
+            content.innerHTML = `
+                <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 5px;">${equipment.item_name}</h3>
+                    <p style="color: #495057;">SKU: ${equipment.item_number}</p>
+                    <p style="color: #495057;">Total Checkouts: ${history.length}</p>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${history.map(h => `
+                        <div style="border: 2px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <strong style="color: #667eea; font-size: 16px;">${h.checked_out_by}</strong>
+                                    <p style="color: #6c757d; font-size: 14px; margin-top: 3px;">${h.event}</p>
+                                </div>
+                                <span style="padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; ${h.date_returned ? 'background: #d4edda; color: #155724;' : 'background: #fff3cd; color: #856404;'}">
+                                    ${h.date_returned ? '✓ Returned' : '⏳ Out'}
+                                </span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                                <div>
+                                    <strong>Checked Out:</strong><br>
+                                    ${new Date(h.checkout_date).toLocaleDateString()}
+                                </div>
+                                <div>
+                                    <strong>${h.date_returned ? 'Returned:' : 'Expected Return:'}</strong><br>
+                                    ${h.date_returned ? new Date(h.date_returned).toLocaleDateString() : new Date(h.return_date).toLocaleDateString()}
+                                </div>
+                                ${h.quantity ? `<div><strong>Quantity:</strong> ${h.quantity}</div>` : ''}
+                                ${h.approved_by ? `<div><strong>Approved By:</strong> ${h.approved_by}</div>` : ''}
+                            </div>
+                            ${h.notes ? `<p style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 13px;"><strong>Notes:</strong> ${h.notes}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        document.getElementById('historyModal').classList.add('show');
+    } catch (error) {
+        console.error('Error loading history:', error);
+        document.getElementById('historyContent').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #dc3545;">
+                <p>Failed to load checkout history</p>
+                <p style="font-size: 14px; margin-top: 10px;">${error.message}</p>
+            </div>
+        `;
+        document.getElementById('historyModal').classList.add('show');
+    }
+}
+
+function closeHistoryModal() {
+    document.getElementById('historyModal').classList.remove('show');
+}
         // Load equipment from API
         async function loadEquipment() {
             try {
@@ -796,8 +738,10 @@ async function loadSKUManager() {
                     ${e.requiresInspection ? '<p style="margin-top:10px; color:#856404;">⚠️ Requires inspection</p>' : ''}
                     ${e.notes ? `<p style="margin-top:10px; font-size:12px; color:#6c757d;">${e.notes}</p>` : ''}
                     <div class="action-buttons" style="margin-top:15px;">
-                        <button class="btn btn-small" onclick="editEquipment(${e.id})" style="background:#28a745;">Edit</button>
-                        <button class="btn btn-small" onclick="deleteEquipment(${e.id}, '${e.itemName}')" style="background:#dc3545;">Delete</button>
+    			<button class="btn btn-small" onclick="editEquipment(${e.id})" style="background:#28a745;">Edit</button>
+    			<button class="btn btn-small" onclick="viewHistory(${e.id})" style="background:#17a2b8;">History</button>
+    			<button class="btn btn-small" onclick="deleteEquipment(${e.id}, '${e.item_name}')" style="background:#dc3545;">Delete</button>
+		    </div>
                     </div>
                 </div>
             `).join('');
@@ -1027,8 +971,7 @@ async function loadSKUManager() {
             }
         }
         
-        // Edit equipment (placeholder for future feature)
-        // Edit equipment - WORKING VERSION
+        // Edit equipment
 async function editEquipment(id) {
     try {
         const response = await fetch(`${API_URL}/equipment/${id}`);
@@ -1036,14 +979,12 @@ async function editEquipment(id) {
         
         const equipment = await response.json();
         
-        console.log('Equipment data:', equipment); // Keep this for now
-        
         document.getElementById('editEquipmentId').value = equipment.id;
-        document.getElementById('editItemName').value = equipment.item_name || '';
-        document.getElementById('editItemNumber').value = equipment.item_number || '';
-        document.getElementById('editCondition').value = equipment.condition || '';
+        document.getElementById('editItemName').value = equipment.item_name;
+        document.getElementById('editItemNumber').value = equipment.item_number;
+        document.getElementById('editCondition').value = equipment.condition;
         document.getElementById('editLocation').value = equipment.location || '';
-        document.getElementById('editLastInspection').value = equipment.last_inspection || '';
+        document.getElementById('editLastInspection').value = equipment.last_inspection_date || '';
         document.getElementById('editNotes').value = equipment.notes || '';
         
         document.getElementById('editModal').classList.add('show');
@@ -1051,6 +992,7 @@ async function editEquipment(id) {
         showAlert('viewAlert', 'Failed to load equipment details', 'error');
     }
 }
+
 function closeEditModal() {
     document.getElementById('editModal').classList.remove('show');
     document.getElementById('editForm').reset();
@@ -1061,13 +1003,13 @@ document.getElementById('editForm').addEventListener('submit', async function(e)
     
     const id = document.getElementById('editEquipmentId').value;
     const data = {
-        item_name: document.getElementById('editItemName').value,
-        item_number: document.getElementById('editItemNumber').value,
-        condition: document.getElementById('editCondition').value,
-        location: document.getElementById('editLocation').value,
-        last_inspection: document.getElementById('editLastInspection').value || null,
-        notes: document.getElementById('editNotes').value
-    };
+    item_name: document.getElementById('editItemName').value,
+    item_number: document.getElementById('editItemNumber').value,
+    condition: document.getElementById('editCondition').value,
+    location: document.getElementById('editLocation').value,
+    lastInspection: document.getElementById('editLastInspection').value || null,
+    notes: document.getElementById('editNotes').value
+};
     
     try {
         const response = await fetch(`${API_URL}/equipment/${id}`, {
@@ -1087,7 +1029,8 @@ document.getElementById('editForm').addEventListener('submit', async function(e)
     } catch (error) {
         showAlert('viewAlert', error.message, 'error');
     }
-});        
+});
+        
         // Initialize
         loadEquipment();
     </script>
