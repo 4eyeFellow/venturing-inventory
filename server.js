@@ -16,7 +16,15 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.static('public'));
+
+// Serve static files from public directory if it exists
+const publicDir = path.join(__dirname, 'public');
+if (require('fs').existsSync(publicDir)) {
+    app.use(express.static(publicDir));
+} else {
+    // If no public folder, serve from root
+    app.use(express.static(__dirname));
+}
 
 // ============== DATABASE CONNECTION ==============
 const pool = new Pool({
@@ -313,8 +321,20 @@ app.delete('/api/skus/:id', async (req, res) => {
 });
 
 // ============== SERVE FRONTEND ==============
+// Serve index.html for all non-API routes
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    // Try public folder first, then root
+    const publicPath = path.join(__dirname, 'public', 'index.html');
+    const rootPath = path.join(__dirname, 'index.html');
+    
+    // Check if file exists in public folder
+    if (require('fs').existsSync(publicPath)) {
+        res.sendFile(publicPath);
+    } else if (require('fs').existsSync(rootPath)) {
+        res.sendFile(rootPath);
+    } else {
+        res.status(404).send('index.html not found. Please make sure it exists in either the root or public folder.');
+    }
 });
 
 // ============== START SERVER ==============
