@@ -655,7 +655,7 @@
         // Auto-detect if running locally or on Render
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000/api'  // Local development
-            : '/api';  // Production (Render or any deployed server)
+            : 'https://venturinginventory.onrender.com/api';  // Production (Render or any deployed server)
         
         // Tab switching
         function switchTab(tabName) {
@@ -966,7 +966,7 @@
             }
             
             try {
-                const response = await fetch(`${API_URL}/add-sku`, {
+                const response = await fetch(`${API_URL}/skus`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ itemName, skuNumber })
@@ -1022,7 +1022,7 @@
             }
             
             try {
-                const response = await fetch(`${API_URL}/delete-sku/${id}`, {
+                const response = await fetch(`${API_URL}/skus/${id}`, {
                     method: 'DELETE'
                 });
                 
