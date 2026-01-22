@@ -296,6 +296,97 @@
         }
         
         /* SKU Manager Styles */
+        .sku-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .sku-category-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .sku-category-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .sku-category-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .sku-prefix {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .sku-count {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .next-sku {
+            background: #e7f3ff;
+            border: 1px dashed #667eea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .next-sku:hover {
+            background: #d0e7ff;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .auto-sku-field {
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
         .sku-item {
             padding: 15px;
             margin: 10px 0;
@@ -370,21 +461,38 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="itemNumber">Item Number *</label>
-                    <input type="text" id="itemNumber" required>
+                    <label for="category">Category *</label>
+                    <select id="category" required onchange="generateSKU()">
+                        <option value="">Select Category</option>
+                        <option value="Tents & Shelter">Tents & Shelter</option>
+                        <option value="Sleeping Gear">Sleeping Gear</option>
+                        <option value="Backpacks">Backpacks</option>
+                        <option value="Cooking Equipment">Cooking Equipment</option>
+                        <option value="Backpacking Stoves">Backpacking Stoves</option>
+                        <option value="Cookware">Cookware</option>
+                        <option value="Coolers & Storage">Coolers & Storage</option>
+                        <option value="Water & Hydration">Water & Hydration</option>
+                        <option value="Lighting">Lighting</option>
+                        <option value="Safety Equipment">Safety Equipment</option>
+                        <option value="Winter Gear">Winter Gear</option>
+                        <option value="Hiking Accessories">Hiking Accessories</option>
+                        <option value="Tools & Repair">Tools & Repair</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div id="autoSKUContainer" class="form-group" style="display:none;">
+                    <label>Suggested SKU Number</label>
+                    <div class="auto-sku-field">
+                        <span id="autoSKU"></span>
+                        <button type="button" class="copy-btn" onclick="copySKU()">Copy</button>
+                    </div>
+                    <small style="color:#6c757d;">Click Copy to paste this into Item Number field</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="category">Category *</label>
-                    <select id="category" required>
-                        <option value="">Select Category</option>
-                        <option value="Camping">Camping</option>
-                        <option value="Cooking">Cooking</option>
-                        <option value="Climbing">Climbing</option>
-                        <option value="Water Sports">Water Sports</option>
-                        <option value="Safety">Safety</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label for="itemNumber">Item Number *</label>
+                    <input type="text" id="itemNumber" required>
                 </div>
                 
                 <div class="form-group">
@@ -441,11 +549,19 @@
             <div class="filter-bar">
                 <select id="filterCategory" onchange="loadEquipment()">
                     <option value="">All Categories</option>
-                    <option value="Camping">Camping</option>
-                    <option value="Cooking">Cooking</option>
-                    <option value="Climbing">Climbing</option>
-                    <option value="Water Sports">Water Sports</option>
-                    <option value="Safety">Safety</option>
+                    <option value="Tents & Shelter">Tents & Shelter</option>
+                    <option value="Sleeping Gear">Sleeping Gear</option>
+                    <option value="Backpacks">Backpacks</option>
+                    <option value="Cooking Equipment">Cooking Equipment</option>
+                    <option value="Backpacking Stoves">Backpacking Stoves</option>
+                    <option value="Cookware">Cookware</option>
+                    <option value="Coolers & Storage">Coolers & Storage</option>
+                    <option value="Water & Hydration">Water & Hydration</option>
+                    <option value="Lighting">Lighting</option>
+                    <option value="Safety Equipment">Safety Equipment</option>
+                    <option value="Winter Gear">Winter Gear</option>
+                    <option value="Hiking Accessories">Hiking Accessories</option>
+                    <option value="Tools & Repair">Tools & Repair</option>
                     <option value="Other">Other</option>
                 </select>
                 
@@ -489,22 +605,11 @@
         <!-- SKU Manager Tab -->
         <div id="sku" class="tab-content">
             <h2>SKU Manager</h2>
+            <p style="color:#6c757d; margin-bottom:20px;">View SKU prefixes by category and see the next available SKU number for each.</p>
             <div id="skuAlert" class="alert"></div>
             
-            <div class="form-group">
-                <label for="skuItemName">Item Name *</label>
-                <input type="text" id="skuItemName" placeholder="Enter item name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="skuNumber">SKU Number *</label>
-                <input type="text" id="skuNumber" placeholder="Enter SKU number" required>
-            </div>
-            
-            <button class="btn" onclick="addSKU()">Add SKU</button>
-            
-            <h3 style="margin-top: 30px; color: #667eea;">Current SKUs</h3>
-            <div id="skuList"></div>
+            <h3 style="color: #667eea; margin-bottom: 15px;">SKU Categories</h3>
+            <div id="skuCategoryGrid" class="sku-category-grid"></div>
         </div>
         
         <!-- Maintenance Tab -->
@@ -654,8 +759,47 @@
     <script>
         // Auto-detect if running locally or on Render
         const API_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000/api'  // Local development
-            : 'https://venturinginventory.onrender.com/api';  // Production (Render or any deployed server)
+            ? 'http://localhost:3001/api'
+            : window.location.origin + '/api';
+        
+        // Generate SKU when category is selected
+        async function generateSKU() {
+            const category = document.getElementById('category').value;
+            if (!category) {
+                document.getElementById('autoSKUContainer').style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/skus/next/${encodeURIComponent(category)}`);
+                if (!response.ok) throw new Error('Failed to generate SKU');
+                
+                const data = await response.json();
+                document.getElementById('autoSKU').textContent = data.nextSKU;
+                document.getElementById('autoSKUContainer').style.display = 'block';
+            } catch (error) {
+                console.error('Error generating SKU:', error);
+                showAlert('addAlert', 'Failed to generate SKU', 'error');
+            }
+        }
+        
+        // Copy SKU to clipboard and item number field
+        function copySKU() {
+            const sku = document.getElementById('autoSKU').textContent;
+            document.getElementById('itemNumber').value = sku;
+            
+            // Also copy to clipboard
+            navigator.clipboard.writeText(sku).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#218838';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
         
         // Tab switching
         function switchTab(tabName) {
@@ -675,9 +819,10 @@
             } else if (tabName === 'maintenance') {
                 loadMaintenance();
             } else if (tabName === 'sku') {
-                loadSKUs();
+                loadSKUCategories();
             }
         }
+        
         
         // Load equipment
         async function loadEquipment() {
@@ -688,6 +833,7 @@
             const params = new URLSearchParams();
             if (category) params.append('category', category);
             if (condition) params.append('condition', condition);
+            params.append('_t', Date.now()); // Cache buster to force fresh data
             if (params.toString()) url += `?${params.toString()}`;
             
             try {
@@ -723,6 +869,7 @@
                 showAlert('viewAlert', 'Failed to load equipment', 'error');
             }
         }
+        
         
         // Load checkouts
         async function loadCheckouts() {
@@ -955,89 +1102,52 @@
             }
         }
         
-        // SKU Management Functions
-        async function addSKU() {
-            const itemName = document.getElementById('skuItemName').value.trim();
-            const skuNumber = document.getElementById('skuNumber').value.trim();
-            
-            if (!itemName || !skuNumber) {
-                showAlert('skuAlert', 'Please fill in all fields', 'error');
-                return;
-            }
-            
+        // SKU Category Display Function
+        async function loadSKUCategories() {
             try {
-                const response = await fetch(`${API_URL}/skus`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ itemName, skuNumber })
-                });
+                const response = await fetch(`${API_URL}/skus/stats`);
+                if (!response.ok) throw new Error('Failed to load SKU stats');
                 
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to add SKU');
-                }
+                const stats = await response.json();
+                const grid = document.getElementById('skuCategoryGrid');
                 
-                const data = await response.json();
-                showAlert('skuAlert', data.message || 'SKU added successfully!', 'success');
-                document.getElementById('skuItemName').value = '';
-                document.getElementById('skuNumber').value = '';
-                loadSKUs();
-            } catch (error) {
-                console.error('Error adding SKU:', error);
-                showAlert('skuAlert', error.message, 'error');
-            }
-        }
-        
-        async function loadSKUs() {
-            try {
-                const response = await fetch(`${API_URL}/skus`);
-                if (!response.ok) throw new Error('Failed to load SKUs');
+                const categories = ['Tents & Shelter', 'Sleeping Gear', 'Backpacks', 'Cooking Equipment', 
+                                   'Backpacking Stoves', 'Cookware', 'Coolers & Storage', 'Water & Hydration',
+                                   'Lighting', 'Safety Equipment', 'Winter Gear', 'Hiking Accessories', 
+                                   'Tools & Repair', 'Other'];
                 
-                const skus = await response.json();
-                const skuList = document.getElementById('skuList');
-                
-                if (skus.length === 0) {
-                    skuList.innerHTML = '<p style="text-align:center; color:#6c757d; padding:20px;">No SKUs found. Add your first SKU above!</p>';
-                    return;
-                }
-                
-                skuList.innerHTML = skus.map(sku => `
-                    <div class="sku-item">
-                        <div class="sku-item-info">
-                            <strong>${sku.item_name}</strong>
-                            <p style="color: #6c757d; margin-top: 5px;">SKU: ${sku.sku_number}</p>
+                grid.innerHTML = categories.map(category => {
+                    const stat = stats[category] || { prefix: 'UE-???', count: 0, nextSKU: 'N/A' };
+                    return `
+                        <div class="sku-category-card">
+                            <h3>${category}</h3>
+                            <div class="sku-prefix">${stat.prefix}</div>
+                            <p class="sku-count">${stat.count} item${stat.count !== 1 ? 's' : ''} in this category</p>
+                            <div class="next-sku" onclick="copyToClipboard('${stat.nextSKU}', event)">
+                                Next SKU: ${stat.nextSKU}
+                                <span style="font-size:12px; margin-left:10px;">📋 Click to copy</span>
+                            </div>
                         </div>
-                        <button onclick="deleteSKU(${sku.id}, '${sku.item_name}')">Delete</button>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (error) {
-                console.error('Error loading SKUs:', error);
-                showAlert('skuAlert', 'Failed to load SKUs', 'error');
+                console.error('Error loading SKU categories:', error);
+                showAlert('skuAlert', 'Failed to load SKU categories', 'error');
             }
         }
         
-        async function deleteSKU(id, itemName) {
-            if (!confirm(`Are you sure you want to delete the SKU for "${itemName}"?`)) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/skus/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to delete SKU');
-                }
-                
-                const data = await response.json();
-                showAlert('skuAlert', data.message || 'SKU deleted successfully!', 'success');
-                loadSKUs();
-            } catch (error) {
-                console.error('Error deleting SKU:', error);
-                showAlert('skuAlert', error.message, 'error');
-            }
+        // Copy to clipboard helper
+        function copyToClipboard(text, event) {
+            navigator.clipboard.writeText(text).then(() => {
+                const element = event.currentTarget;
+                const originalBg = element.style.background;
+                element.style.background = '#28a745';
+                element.innerHTML = `Copied: ${text} <span style="font-size:12px; margin-left:10px;">✓</span>`;
+                setTimeout(() => {
+                    element.style.background = originalBg;
+                    element.innerHTML = `Next SKU: ${text} <span style="font-size:12px; margin-left:10px;">📋 Click to copy</span>`;
+                }, 2000);
+            });
         }
         
         // Alert helper

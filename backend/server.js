@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
@@ -465,6 +465,113 @@ app.post('/api/maintenance', async (req, res) => {
 });
 
 // ============== SKU MANAGEMENT ENDPOINTS ==============
+
+// Category to SKU prefix mapping
+const CATEGORY_SKU_MAP = {
+  'Tents & Shelter': 'TENT',
+  'Sleeping Gear': 'SLEEP',
+  'Backpacks': 'PACK',
+  'Cooking Equipment': 'COOK',
+  'Backpacking Stoves': 'STOVE',
+  'Cookware': 'WARE',
+  'Coolers & Storage': 'COOL',
+  'Water & Hydration': 'WATER',
+  'Lighting': 'LIGHT',
+  'Safety Equipment': 'SAFE',
+  'Winter Gear': 'WINTER',
+  'Hiking Accessories': 'HIKE',
+  'Tools & Repair': 'TOOL',
+  'Other': 'OTHER'
+};
+
+// Get SKU statistics by category
+app.get('/api/skus/stats', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        category,
+        COUNT(*) as count
+      FROM equipment
+      GROUP BY category
+      ORDER BY category
+    `);
+    
+    const stats = {};
+    Object.keys(CATEGORY_SKU_MAP).forEach(category => {
+      const categoryData = result.rows.find(r => r.category === category);
+      const prefix = CATEGORY_SKU_MAP[category];
+      const count = categoryData ? parseInt(categoryData.count) : 0;
+      
+      stats[category] = {
+        prefix: `UE-${prefix}`,
+        count: count,
+        nextSKU: `UE-${prefix}-001` // Placeholder, will be calculated properly next
+      };
+    });
+    
+    // Now get the actual next SKU for each category
+    for (const category of Object.keys(CATEGORY_SKU_MAP)) {
+      const prefix = CATEGORY_SKU_MAP[category];
+      const skuResult = await pool.query(`
+        SELECT item_number
+        FROM equipment
+        WHERE category = $1 AND item_number LIKE $2
+        ORDER BY item_number DESC
+        LIMIT 1
+      `, [category, `UE-${prefix}-%`]);
+      
+      let nextNumber = 1;
+      if (skuResult.rows.length > 0 && skuResult.rows[0].item_number) {
+        const match = String(skuResult.rows[0].item_number).match(/UE-[A-Z]+-(\d+)/);
+        if (match) {
+          nextNumber = parseInt(match[1]) + 1;
+        }
+      }
+      
+      stats[category].nextSKU = `UE-${prefix}-${String(nextNumber).padStart(3, '0')}`;
+    }
+    
+    res.json(stats);
+  } catch (err) {
+    console.error('Error fetching SKU stats:', err);
+    res.status(500).json({ error: 'Failed to fetch SKU stats' });
+  }
+});
+
+// Get next available SKU for a category
+app.get('/api/skus/next/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    const prefix = CATEGORY_SKU_MAP[category];
+    
+    if (!prefix) {
+      return res.status(400).json({ error: 'Invalid category' });
+    }
+    
+    // Get all SKUs for this category that match the pattern
+    const result = await pool.query(`
+      SELECT item_number
+      FROM equipment
+      WHERE category = $1 AND item_number LIKE $2
+      ORDER BY item_number DESC
+      LIMIT 1
+    `, [category, `UE-${prefix}-%`]);
+    
+    let nextNumber = 1;
+    if (result.rows.length > 0 && result.rows[0].item_number) {
+      const match = String(result.rows[0].item_number).match(/UE-[A-Z]+-(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1]) + 1;
+      }
+    }
+    
+    const nextSKU = `UE-${prefix}-${String(nextNumber).padStart(3, '0')}`;
+    res.json({ nextSKU, category, prefix: `UE-${prefix}` });
+  } catch (err) {
+    console.error('Error generating next SKU:', err);
+    res.status(500).json({ error: 'Failed to generate SKU' });
+  }
+});
 
 // Get all SKUs
 app.get('/api/skus', async (req, res) => {
